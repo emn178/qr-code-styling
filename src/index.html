@@ -9,36 +9,36 @@
         <div id="canvas2"></div>
         <script type="text/javascript">
             const options = {
-              width: 500,
-              height: 500,
-              data: "h",
-              image: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+              width: 264,
+              height: 264,
+              data: "http://localhost:8080/online-tools/qr-code/generator/",
+              // image: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
               dotsOptions: {
                 type: "extra-rounded",
-                gradient: {
-                  type: "linear", //radial,
-                  rotation: Math.PI/2,
-                  colorStops: [{ offset: 0, color: 'blue' }, { offset: 0.5, color: 'red' }, { offset: 1, color: 'green' }]
-                },
+                // gradient: {
+                //   type: "linear", //radial,
+                //   rotation: Math.PI/2,
+                //   colorStops: [{ offset: 0, color: 'blue' }, { offset: 0.5, color: 'red' }, { offset: 1, color: 'green' }]
+                // },
               },
-              cornersSquareOptions: {
-                type: "rounded",
-                gradient: {
-                  type: "linear",
-                  rotation: Math.PI * 0.2,
-                  colorStops: [{
-                    offset: 0,
-                    color: 'blue'
-                  }, {
-                    offset: 1,
-                    color: 'red'
-                  }]
-                },
-              },
-              imageOptions: {
-                crossOrigin: "anonymous",
-                margin: 30
-              }
+              // cornersSquareOptions: {
+              //   type: "rounded",
+              //   gradient: {
+              //     type: "linear",
+              //     rotation: Math.PI * 0.2,
+              //     colorStops: [{
+              //       offset: 0,
+              //       color: 'blue'
+              //     }, {
+              //       offset: 1,
+              //       color: 'red'
+              //     }]
+              //   },
+              // },
+              // imageOptions: {
+              //   crossOrigin: "anonymous",
+              //   margin: 30
+              // }
             };
           const qrCode = new QRCodeStyling(options);
           const qrCode2 = new QRCodeStyling({

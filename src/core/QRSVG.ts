@@ -27,6 +27,14 @@ const dotMask = [
   [0, 0, 0, 0, 0, 0, 0]
 ];
 
+function formatXy(v: number) {
+  return Math.floor(v);
+}
+
+function formatWh(v: number) {
+  return Math.ceil(v);
+}
+
 export default class QRSVG {
   _element: SVGElement;
   _defs: SVGElement;
@@ -71,7 +79,8 @@ export default class QRSVG {
   async drawQR(qr: QRCode): Promise<void> {
     const count = qr.getModuleCount();
     const minSize = Math.min(this._options.width, this._options.height) - this._options.margin * 2;
-    const dotSize = Math.floor(minSize / count);
+    // const dotSize = Math.floor(minSize / count);
+    const dotSize = minSize / count;
     let drawImageSize = {
       hideXDots: 0,
       hideYDots: 0,
@@ -87,7 +96,8 @@ export default class QRSVG {
       if (!this._image) return;
       const { imageOptions, qrOptions } = this._options;
       const coverLevel = imageOptions.imageSize * errorCorrectionPercents[qrOptions.errorCorrectionLevel];
-      const maxHiddenDots = Math.floor(coverLevel * count * count);
+      // const maxHiddenDots = Math.floor(coverLevel * count * count);
+      const maxHiddenDots = coverLevel * count * count;
 
       drawImageSize = calculateImageSize({
         originalWidth: this._image.width,
@@ -165,9 +175,12 @@ export default class QRSVG {
     }
 
     const minSize = Math.min(options.width, options.height) - options.margin * 2;
-    const dotSize = Math.floor(minSize / count);
-    const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    // const dotSize = Math.floor(minSize / count);
+    const dotSize = minSize / count;
+    // const xBeginning = Math.floor((options.width - count * dotSize) / 2);
+    const xBeginning = (options.width - count * dotSize) / 2;
+    // const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    const yBeginning = (options.height - count * dotSize) / 2;
     const dot = new QRDot({ svg: this._element, type: options.dotsOptions.type });
 
     this._dotsClipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
@@ -178,10 +191,10 @@ export default class QRSVG {
       options: options.dotsOptions?.gradient,
       color: options.dotsOptions.color,
       additionalRotation: 0,
-      x: xBeginning,
-      y: yBeginning,
-      height: count * dotSize,
-      width: count * dotSize,
+      x: formatXy(xBeginning),
+      y: formatXy(yBeginning),
+      height: formatWh(count * dotSize),
+      width: formatWh(count * dotSize),
       name: "dot-color"
     });
 
@@ -195,9 +208,21 @@ export default class QRSVG {
         }
 
         dot.draw(
-          xBeginning + i * dotSize,
-          yBeginning + j * dotSize,
-          dotSize,
+          // Math.round((xBeginning + i * dotSize) * 100) / 100,
+          // Math.round((yBeginning + j * dotSize) * 100) / 100,
+          // Math.round(dotSize * 100) / 100,
+
+          // Math.round((xBeginning + i * dotSize) * 10) / 10,
+          // Math.round((yBeginning + j * dotSize) * 10) / 10,
+          // Math.round(dotSize * 10) / 10,
+
+          formatXy(xBeginning + i * dotSize),
+          formatXy(yBeginning + j * dotSize),
+          formatWh(dotSize),
+
+          // Math.round(xBeginning + i * dotSize),
+          // Math.round(yBeginning + j * dotSize),
+          // Math.round(dotSize),
           (xOffset: number, yOffset: number): boolean => {
             if (i + xOffset < 0 || j + yOffset < 0 || i + xOffset >= count || j + yOffset >= count) return false;
             if (filter && !filter(i + xOffset, j + yOffset)) return false;
@@ -226,11 +251,14 @@ export default class QRSVG {
 
     const count = this._qr.getModuleCount();
     const minSize = Math.min(options.width, options.height) - options.margin * 2;
-    const dotSize = Math.floor(minSize / count);
+    // const dotSize = Math.floor(minSize / count);
+    const dotSize = minSize / count;
     const cornersSquareSize = dotSize * 7;
     const cornersDotSize = dotSize * 3;
-    const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    // const xBeginning = Math.floor((options.width - count * dotSize) / 2);
+    const xBeginning = (options.width - count * dotSize) / 2;
+    // const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    const yBeginning = (options.height - count * dotSize) / 2;
 
     [
       [0, 0, 0],
@@ -252,10 +280,10 @@ export default class QRSVG {
           options: options.cornersSquareOptions?.gradient,
           color: options.cornersSquareOptions?.color,
           additionalRotation: rotation,
-          x,
-          y,
-          height: cornersSquareSize,
-          width: cornersSquareSize,
+          x: formatXy(x),
+          y: formatXy(y),
+          height: formatWh(cornersSquareSize),
+          width: formatWh(cornersSquareSize),
           name: `corners-square-color-${column}-${row}`
         });
       }
@@ -263,7 +291,7 @@ export default class QRSVG {
       if (options.cornersSquareOptions?.type) {
         const cornersSquare = new QRCornerSquare({ svg: this._element, type: options.cornersSquareOptions.type });
 
-        cornersSquare.draw(x, y, cornersSquareSize, rotation);
+        cornersSquare.draw(formatXy(x), formatXy(y), formatWh(cornersSquareSize), rotation);
 
         if (cornersSquare._element && cornersSquareClipPath) {
           cornersSquareClipPath.appendChild(cornersSquare._element);
@@ -278,9 +306,9 @@ export default class QRSVG {
             }
 
             dot.draw(
-              x + i * dotSize,
-              y + j * dotSize,
-              dotSize,
+              formatXy(x + i * dotSize),
+              formatXy(y + j * dotSize),
+              formatWh(dotSize),
               (xOffset: number, yOffset: number): boolean => !!squareMask[i + xOffset]?.[j + yOffset]
             );
 
@@ -301,10 +329,10 @@ export default class QRSVG {
           options: options.cornersDotOptions?.gradient,
           color: options.cornersDotOptions?.color,
           additionalRotation: rotation,
-          x: x + dotSize * 2,
-          y: y + dotSize * 2,
-          height: cornersDotSize,
-          width: cornersDotSize,
+          x: formatXy(x + dotSize * 2),
+          y: formatXy(y + dotSize * 2),
+          height: formatWh(cornersDotSize),
+          width: formatWh(cornersDotSize),
           name: `corners-dot-color-${column}-${row}`
         });
       }
@@ -312,7 +340,7 @@ export default class QRSVG {
       if (options.cornersDotOptions?.type) {
         const cornersDot = new QRCornerDot({ svg: this._element, type: options.cornersDotOptions.type });
 
-        cornersDot.draw(x + dotSize * 2, y + dotSize * 2, cornersDotSize, rotation);
+        cornersDot.draw(formatXy(x + dotSize * 2), formatXy(y + dotSize * 2), formatWh(cornersDotSize), rotation);
 
         if (cornersDot._element && cornersDotClipPath) {
           cornersDotClipPath.appendChild(cornersDot._element);
@@ -327,9 +355,9 @@ export default class QRSVG {
             }
 
             dot.draw(
-              x + i * dotSize,
-              y + j * dotSize,
-              dotSize,
+              formatXy(x + i * dotSize),
+              formatXy(y + j * dotSize),
+              formatWh(dotSize),
               (xOffset: number, yOffset: number): boolean => !!dotMask[i + xOffset]?.[j + yOffset]
             );
 
@@ -375,8 +403,10 @@ export default class QRSVG {
     dotSize: number;
   }): void {
     const options = this._options;
-    const xBeginning = Math.floor((options.width - count * dotSize) / 2);
-    const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    // const xBeginning = Math.floor((options.width - count * dotSize) / 2);
+    const xBeginning = (options.width - count * dotSize) / 2;
+    // const yBeginning = Math.floor((options.height - count * dotSize) / 2);
+    const yBeginning = (options.height - count * dotSize) / 2;
     const dx = xBeginning + options.imageOptions.margin + (count * dotSize - width) / 2;
     const dy = yBeginning + options.imageOptions.margin + (count * dotSize - height) / 2;
     const dw = width - options.imageOptions.margin * 2;
